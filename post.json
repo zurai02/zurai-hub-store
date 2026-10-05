@@ -1,0 +1,12 @@
+[
+  {
+    "id": "script1",
+    "title": "Infinite Jump",
+    "content": "local Player = game:GetService('Players').LocalPlayer\nlocal Mouse = Player:GetMouse()\nMouse.KeyDown:Connect(function(key)\n    if key == ' ' then\n        Player.Character:FindFirstChildOfClass('Humanoid'):ChangeState('Jumping')\n    end\nend)"
+  },
+  {
+    "id": "script2",
+    "title": "Simple Fly Code",
+    "content": "-- Paste your fly script content here\nprint('Fly Loaded')"
+  }
+]
