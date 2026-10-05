@@ -1,96 +1,46 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const scriptForm = document.getElementById('script-form');
     const scriptsContainer = document.getElementById('scripts-container');
 
-    // 1. Storage buckets: Load your hardcoded web scripts list, and local browser-added scripts
-    let webScripts = [];
-    let browserScripts = JSON.parse(localStorage.getItem('rbx_browser_scripts')) || [];
-
-    // Pull configuration details directly from your posted files index
+    // Strict Request Channel: Pull configuration data directly from the network file
     fetch('posts.json')
         .then(response => {
-            if (!response.ok) throw new Error();
+            if (!response.ok) throw new Error("Network data unreadable.");
             return response.json();
         })
-        .then(data => {
-            webScripts = data;
-            combineAndRender();
+        .then(savedScripts => {
+            renderScripts(savedScripts);
         })
-        .catch(() => {
-            console.warn("Using baseline defaults. Run via GitHub or host for indexing dependencies.");
-            // Default baseline if posts.json is not initialized properly yet
-            webScripts = [{
-                "id": "novaui",
-                "title": "NovaUI",
-                "content": "loadstring(game:HttpGet(\"https://githubusercontent.com\"))()"
-            }];
-            combineAndRender();
+        .catch(err => {
+            scriptsContainer.innerHTML = `<p style="color: #ff7b72;">Error loading dashboard. Make sure posts.json is created and formatted properly.</p>`;
         });
-
-    // Handle incoming browser additions
-    scriptForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const title = document.getElementById('script-title').value;
-        const content = document.getElementById('script-content').value;
-        const id = 'browser_' + Date.now().toString(); // Creates a distinct target namespace
-
-        const newBrowserScript = { id, title, content, isBrowserSaved: true };
-        browserScripts.push(newBrowserScript);
-
-        // Store into persistent browser sandbox partition
-        localStorage.setItem('rbx_browser_scripts', JSON.stringify(browserScripts));
-        
-        combineAndRender();
-        scriptForm.reset();
-    });
-
-    function combineAndRender() {
-        // Merge shared list with individual browser inputs seamlessly
-        const compiledList = [...webScripts, ...browserScripts];
-        renderScripts(compiledList);
-    }
 
     function renderScripts(savedScripts) {
         scriptsContainer.innerHTML = '';
 
         if (!savedScripts || savedScripts.length === 0) {
-            scriptsContainer.innerHTML = '<p style="color: var(--text-muted);">No scripts indexed at this address.</p>';
+            scriptsContainer.innerHTML = '<p style="color: var(--text-muted);">No entries found inside posts.json.</p>';
             return;
         }
 
-        const baseUrl = window.location.href.split('index.html')[0];
+        // Dynamically identifies your custom environment or production deployment path
+        const baseUrl = window.location.href.split('index.html');
+        const rawFileUrl = `${baseUrl}posts.json`;
 
         savedScripts.forEach(script => {
             const card = document.createElement('div');
             card.className = 'script-card';
 
-            let loadstringText = '';
-
-            if (script.isBrowserSaved) {
-                // EXECUTOR STRATEGY FOR DIRECT BROWSER STORAGE:
-                // Since this data lives inside your local browser memory sandbox instead of GitHub's server files,
-                // we convert your raw string code instantly into a direct data-stream variable macro block.
-                // This payload works seamlessly in all executors on any network without needing a server endpoint file!
-                const safePayload = btoa(unescape(encodeURIComponent(script.content)));
-                loadstringText = `loadstring(game:GetService("HttpService"):Base64Decode("${safePayload}"))()`;
-            } else {
-                // EXECUTOR STRATEGY FOR GITHUB POSTS.JSON STORAGE:
-                const rawFileUrl = `${baseUrl}posts.json`;
-                loadstringText = `local json = game:GetService("HttpService"):JSONDecode(game:HttpGet("${rawFileUrl}")) for _, s in pairs(json) do if s.id == "${script.id}" then loadstring(s.content)() break end end`;
-            }
+            // High-compatibility Lua query string for Roblox executors
+            const loadstringText = `local json = game:GetService("HttpService"):JSONDecode(game:HttpGet("${rawFileUrl}")) for _, s in pairs(json) do if s.id == "${script.id}" then loadstring(s.content)() break end end`;
 
             card.innerHTML = `
-                <h3>${escapeHtml(script.title)} ${script.isBrowserSaved ? '<span class="badge-local">Browser Local</span>' : ''}</h3>
-                <div class="script-actions">
-                    <button class="btn btn-primary copy-loadstring-btn" data-loadstring="${escapeHtml(loadstringText)}">Copy Loadstring</button>
-                    ${script.isBrowserSaved ? `<button class="btn btn-secondary delete-btn" data-id="\${script.id}">Delete</button>` : ''}
-                </div>
+                <h3>${escapeHtml(script.title)}</h3>
+                <button class="copy-loadstring-btn" data-loadstring="${escapeHtml(loadstringText)}">Copy Loadstring</button>
             `;
             scriptsContainer.appendChild(card);
         });
 
-        // Initialize click tracking to copy code elements 
+        // Event mappings for clipboard interaction handles
         document.querySelectorAll('.copy-loadstring-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const loadstring = e.target.getAttribute('data-loadstring');
@@ -99,16 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     e.target.textContent = "Copied!";
                     setTimeout(() => { e.target.textContent = originalText; }, 1500);
                 });
-            });
-        });
-
-        // Initialize local deletion pathways
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const targetId = e.target.getAttribute('data-id');
-                browserScripts = browserScripts.filter(s => s.id !== targetId);
-                localStorage.setItem('rbx_browser_scripts', JSON.stringify(browserScripts));
-                combineAndRender();
             });
         });
     }
