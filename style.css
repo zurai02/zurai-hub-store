@@ -95,16 +95,6 @@ button, .btn {
     background-color: var(--accent-hover);
 }
 
-.btn-secondary {
-    background-color: var(--btn-secondary);
-    color: var(--text-main);
-    border-color: var(--border-color);
-}
-
-.btn-secondary:hover {
-    background-color: var(--btn-secondary-hover);
-}
-
 .scripts-grid {
     display: flex;
     flex-direction: column;
