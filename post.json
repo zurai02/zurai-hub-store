@@ -2,6 +2,11 @@
   {
     "id": "novaui",
     "title": "NovaUI",
-    "content": "loadstring(game:HttpGet(\"https://githubusercontent.com\"))()"
+    "content": "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/zurai02/NovaUI/main/NovaUI.luau\"))()"
+  },
+  {
+    "id": "zurai-hub",
+    "title": "Zurai-hub",
+    "content": "task.spawn(function() pcall(function() loadstring(game:HttpGet(\"https://github.com/zurai02/zurai-hub/releases/download/v2/loadstring.luau\"))() end) end)"
   }
 ]
