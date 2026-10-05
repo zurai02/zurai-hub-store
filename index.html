@@ -12,17 +12,27 @@
     </header>
 
     <main class="container">
-        <!-- Configuration Notice -->
-        <section class="info-section">
-            <h2>Script Hub Dashboard</h2>
-            <p>To manage your scripts, update the entries inside your <code>posts.json</code> file on GitHub.</p>
+        <!-- New Script Direct Browser Input Form -->
+        <section class="form-section">
+            <h2>Add Direct Browser Script</h2>
+            <form id="script-form">
+                <div class="form-group">
+                    <label for="script-title">Script Name</label>
+                    <input type="text" id="script-title" placeholder="e.g., Infinite Jump, Fly Tool" required>
+                </div>
+                <div class="form-group">
+                    <label for="script-content">Lua Code Payload</label>
+                    <textarea id="script-content" rows="8" placeholder="-- Paste your Lua script block content here..." required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Add Code to Hub</button>
+            </form>
         </section>
 
-        <!-- Scripts Grid Layout -->
+        <!-- Dynamic List Dashboard Grid -->
         <section class="list-section">
-            <h2>Available Scripts</h2>
+            <h2>Active Script Collection</h2>
             <div id="scripts-container" class="scripts-grid">
-                <p style="color: var(--text-muted);">Loading scripts from posts.json...</p>
+                <p style="color: var(--text-muted);">Syncing files from configuration index...</p>
             </div>
         </section>
     </main>
