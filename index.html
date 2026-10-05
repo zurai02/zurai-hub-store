@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Script Hub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">RBX<span>ScriptHub</span></div>
+    </header>
+
+    <main class="container">
+        <!-- Configuration Instruction -->
+        <section class="info-section">
+            <h2>GitHub Script Hub Instructions</h2>
+            <p>To add or update your scripts, manually edit your <code>store.json</code> file directly inside your GitHub repository. This dashboard will update automatically.</p>
+        </section>
+
+        <!-- Saved Scripts List -->
+        <section class="list-section">
+            <h2>Available Scripts</h2>
+            <div id="scripts-container" class="scripts-grid">
+                <p style="color: var(--text-muted);">Loading scripts from store.json...</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
