@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const scriptsContainer = document.getElementById('scripts-container');
 
-    // Hardcoded fallback data so your site works perfectly offline or locally on your PC
+    // Hardcoded fallback data so the site renders when opened offline or locally on your desktop
     const localFallbackData = [
         {
             "id": "novaui",
@@ -10,17 +10,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
-    // Attempt to fetch from your store.json file
-    fetch('store.json')
+    // Read scripts directly out of posts.json file
+    fetch('posts.json')
         .then(response => {
-            if (!response.ok) throw new Error("Could not load store.json file.");
+            if (!response.ok) throw new Error("Could not find posts.json");
             return response.json();
         })
         .then(savedScripts => {
             renderScripts(savedScripts);
         })
-        .catch(err => {
-            console.warn("Browser blocked local file read (CORS) or store.json is missing. Using fallback script data.");
+        .catch(() => {
+            console.warn("Local file reading restricted or posts.json missing. Using local fallback view.");
             renderScripts(localFallbackData);
         });
 
@@ -28,21 +28,20 @@ document.addEventListener('DOMContentLoaded', () => {
         scriptsContainer.innerHTML = '';
 
         if (!savedScripts || savedScripts.length === 0) {
-            scriptsContainer.innerHTML = '<p style="color: var(--text-muted);">No scripts found inside store.json.</p>';
+            scriptsContainer.innerHTML = '<p style="color: var(--text-muted);">No scripts found inside posts.json.</p>';
             return;
         }
 
-        // Detects your repository username and path structure dynamically
+        // Dynamically identifies your repository web address on GitHub Pages
         const baseUrl = window.location.href.split('index.html')[0];
 
         savedScripts.forEach(script => {
             const card = document.createElement('div');
             card.className = 'script-card';
 
-            // Point directly to your online static store json file setup
-            const rawFileUrl = `${baseUrl}store.json`;
+            const rawFileUrl = `${baseUrl}posts.json`;
             
-            // This Lua string pulls down the JSON from GitHub and extracts your specific script payload
+            // This Lua string handles reading the live JSON data mapping and executing the chosen script content block
             const loadstringText = `local json = game:GetService("HttpService"):JSONDecode(game:HttpGet("${rawFileUrl}")) for _, s in pairs(json) do if s.id == "${script.id}" then loadstring(s.content)() break end end`;
 
             card.innerHTML = `
@@ -54,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             scriptsContainer.appendChild(card);
         });
 
-        // Copy button interactions
+        // Initialize click-to-copy interactions
         document.querySelectorAll('.copy-loadstring-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const loadstring = e.target.getAttribute('data-loadstring');
@@ -63,13 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     e.target.textContent = "Copied!";
                     setTimeout(() => { e.target.textContent = originalText; }, 1500);
                 }).catch(() => {
-                    alert("Failed to auto-copy. Make sure you are using a secure connection (HTTPS) or localhost.");
+                    alert("Copy interaction failed. Make sure your webpage is using HTTPS on GitHub.");
                 });
             });
         });
     }
 
-    // Helper to safely parse and escape characters for the UI template
     function escapeHtml(text) {
         const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
         return text.replace(/[&<>"']/g, m => map[m]);
