@@ -40,31 +40,18 @@ header {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 30px auto;
     padding: 0 20px;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 30px;
 }
 
-.info-section {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 20px;
-}
-
-.info-section p {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-}
-
-code {
-    background: #21262d;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: monospace;
+@media (min-width: 768px) {
+    .container {
+        grid-template-columns: 1fr 1.2fr;
+    }
 }
 
 h2 {
@@ -72,6 +59,37 @@ h2 {
     font-size: 1.3rem;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+input[type="text"], textarea {
+    width: 100%;
+    background-color: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-main);
+    padding: 10px;
+    font-family: inherit;
+}
+
+textarea {
+    font-family: 'Courier New', Courier, monospace;
+    resize: vertical;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: #58a6ff;
 }
 
 button, .btn {
@@ -89,10 +107,21 @@ button, .btn {
 .btn-primary {
     background-color: var(--accent);
     color: white;
+    width: 100%;
 }
 
 .btn-primary:hover {
     background-color: var(--accent-hover);
+}
+
+.btn-secondary {
+    background-color: var(--btn-secondary);
+    color: var(--text-main);
+    border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--btn-secondary-hover);
 }
 
 .scripts-grid {
@@ -109,8 +138,20 @@ button, .btn {
 }
 
 .script-card h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 10px;
     font-size: 1.1rem;
+}
+
+.badge-local {
+    font-size: 0.7rem;
+    background-color: #388bfd1a;
+    color: #58a6ff;
+    border: 1px solid #388bfd4d;
+    padding: 2px 6px;
+    border-radius: 10px;
 }
 
 .script-actions {
