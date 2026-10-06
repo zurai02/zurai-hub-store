@@ -1,9 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const scriptsContainer = document.getElementById('scripts-container');
 
+    // Natively fetch configuration index from posts.json for user interface rendering
     fetch('./posts.json')
         .then(response => {
-            if (!response.ok) throw new Error("Could not find or read posts.json");
+            if (!response.ok) throw new Error("Could not read posts.json");
             return response.json();
         })
         .then(savedScripts => {
@@ -11,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(err => {
             console.error(err);
-            scriptsContainer.innerHTML = `<p style="color: #ff7b72; padding: 20px;">Error loading posts.json file data.</p>`;
+            scriptsContainer.innerHTML = `<p style="color: #ff7b72; padding: 20px;">Error loading data map. Ensure posts.json exists and is properly formatted.</p>`;
         });
 
     function renderScripts(savedScripts) {
@@ -22,26 +23,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Calculate your live GitHub raw assets folder path dynamically
-        const currentUrl = new URL(window.location.href);
-        let rawBaseUrl = '';
-
-        if (currentUrl.hostname.includes('github.io')) {
-            const user = currentUrl.hostname.split('.')[0];
-            const repo = currentUrl.pathname.split('/').filter(Boolean)[0];
-            rawBaseUrl = `https://githubusercontent.com{user}/${repo}/main/`;
-        } else {
-            // Local fallback directory mapping if testing locally
-            rawBaseUrl = currentUrl.origin + currentUrl.pathname.substring(0, currentUrl.pathname.lastIndexOf('/') + 1);
-        }
+        // Exact locked-in GitHub Raw base URL for absolute execution stability
+        const rawGitHubBaseUrl = "https://githubusercontent.com";
 
         savedScripts.forEach(script => {
             const card = document.createElement('div');
             card.className = 'script-card';
 
-            // GENERATES FLAWLESS COMPATIBLE LUA FOR EXECUTORS:
-            // Packs your base repo path variable and fires the clean raw.lua router script 
-            const loadstringText = `_G.ScriptHubBaseUrl = "${rawBaseUrl}" loadstring(game:HttpGet("${rawBaseUrl}raw.lua"))()("${script.id}")`;
+            // High-compatibility, short execution script for your Roblox executor
+            const loadstringText = `loadstring(game:HttpGet("${rawGitHubBaseUrl}raw.lua"))()("${script.id}")`;
 
             card.innerHTML = `
                 <h3>${escapeHtml(script.title)}</h3>
@@ -50,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             scriptsContainer.appendChild(card);
         });
 
+        // Set up click interactive copy listener
         document.querySelectorAll('.copy-loadstring-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const loadstring = e.target.getAttribute('data-loadstring');
