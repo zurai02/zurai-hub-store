@@ -4,24 +4,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let masterScriptsArray = [];
 
-    // Production Cache-Busting Fallback: Native load execution targets used during offline testing loops
     const offlineMemoryArray = [
         { "id": "novaui", "title": "NovaUI" },
         { "id": "zurai-hub", "title": "Zurai-hub" }
     ];
 
-    // Fetch master config list using cache busting string configurations
+    // Fetch master config list using cache busting parameters
     fetch(`./posts.json?cb=${Date.now()}`)
         .then(response => {
-            if (!response.ok) throw new Error("Manifest file unreadable.");
+            if (!response.ok) throw new Error();
             return response.json();
         })
         .then(savedScripts => {
             masterScriptsArray = savedScripts;
             renderScripts(masterScriptsArray);
         })
-        .catch(err => {
-            console.warn("Deploying client-side structural cache container fallback layout.", err);
+        .catch(() => {
             masterScriptsArray = offlineMemoryArray;
             renderScripts(masterScriptsArray);
         });
@@ -34,16 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // PRODUCTION CDN PIPELINE:
-        // By pulling data through the jsDelivr open proxy wrapper, we ensure script changes are delivered instantly
-        // to Roblox executors worldwide without encountering traditional 5-minute GitHub Pages replication cache lag!
+        // Global jsDelivr public wrapper ensures instant execution matrix updates without delay
         const cdnExecutionUrl = "https://jsdelivr.net";
 
         scriptsToDisplay.forEach(script => {
             const card = document.createElement('div');
             card.className = 'script-card';
 
-            // High-performance executor macro targeting your global CDN endpoint profile map
+            // Fixed dynamic link builder running directly off your web index configurations
             const loadstringText = `local json = game:GetService("HttpService"):JSONDecode(game:HttpGet("${cdnExecutionUrl}")) for _, s in pairs(json) do if s.id == "${script.id}" then loadstring(s.content)() break end end`;
 
             card.innerHTML = `
@@ -53,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
             scriptsContainer.appendChild(card);
         });
 
-        // Interactive clipboard interaction controllers
         document.querySelectorAll('.copy-loadstring-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const buttonElement = e.target;
@@ -73,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Dynamic Client UI Search Layout Filter Hook
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const queryText = e.target.value.toLowerCase().trim();
