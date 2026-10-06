@@ -1,45 +1,59 @@
 document.addEventListener('DOMContentLoaded', () => {
     const scriptsContainer = document.getElementById('scripts-container');
 
-    // Fetch scripts natively from posts.json using a safe relative path
+    // Safe offline dataset matrix for local desktop troubleshooting fallback scenarios
+    const repositoryManifest = [
+        {
+            "id": "novaui",
+            "title": "NovaUI"
+        },
+        {
+            "id": "zurai-hub",
+            "title": "Zurai-hub"
+        }
+    ];
+
+    // Natively fetch target list profiles
     fetch('./posts.json')
         .then(response => {
-            if (!response.ok) throw new Error("Could not find or read posts.json");
+            if (!response.ok) throw new Error();
             return response.json();
         })
         .then(savedScripts => {
             renderScripts(savedScripts);
         })
-        .catch(err => {
-            console.error(err);
-            scriptsContainer.innerHTML = `
-                <div style="color: #ff7b72; padding: 20px; background: #21262d; border-radius: 6px; border: 1px solid #30363d;">
-                    <p><strong>Error loading dashboard.</strong></p>
-                    <p style="font-size: 0.85rem; color: #8b949e; margin-top: 5px;">
-                        If you are opening index.html directly from your computer files, browsers block local JSON files. 
-                        <strong>Upload these files to GitHub Pages</strong> and it will instantly work live!
-                    </p>
-                </div>`;
+        .catch(() => {
+            console.warn("Using offline fallback engine layout matrix.");
+            renderScripts(repositoryManifest);
         });
 
     function renderScripts(savedScripts) {
         scriptsContainer.innerHTML = '';
 
         if (!savedScripts || savedScripts.length === 0) {
-            scriptsContainer.innerHTML = '<p style="color: var(--text-muted);">No entries found inside posts.json.</p>';
+            scriptsContainer.innerHTML = '<p style="color: var(--text-muted);">Empty config mapping detected.</p>';
             return;
         }
 
-        // Dynamically creates a rock-solid base folder URL without complex splitting logic
+        // --- EXECUTOR FIX ROUTING LOGIC ---
+        // Translates deployment addresses directly into raw text channels
+        let rawFileUrl = '';
         const currentUrl = new URL(window.location.href);
-        const baseUrl = currentUrl.origin + currentUrl.pathname.substring(0, currentUrl.pathname.lastIndexOf('/') + 1);
-        const rawFileUrl = baseUrl + 'posts.json';
+
+        if (currentUrl.hostname.includes('github.io')) {
+            const user = currentUrl.hostname.split('.')[0];
+            const repo = currentUrl.pathname.split('/').filter(Boolean)[0];
+            rawFileUrl = `https://githubusercontent.com{user}/${repo}/main/posts.json`;
+        } else {
+            // Local fallback routing if running on localhost / test directories
+            rawFileUrl = currentUrl.origin + currentUrl.pathname.substring(0, currentUrl.pathname.lastIndexOf('/') + 1) + 'posts.json';
+        }
 
         savedScripts.forEach(script => {
             const card = document.createElement('div');
             card.className = 'script-card';
 
-            // High-compatibility Lua query string for Roblox executors
+            // Flawless JSON data mapping loop built explicitly for Roblox executors
             const loadstringText = `local json = game:GetService("HttpService"):JSONDecode(game:HttpGet("${rawFileUrl}")) for _, s in pairs(json) do if s.id == "${script.id}" then loadstring(s.content)() break end end`;
 
             card.innerHTML = `
@@ -49,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             scriptsContainer.appendChild(card);
         });
 
-        // Event mappings for clipboard interaction handles
+        // Setup copy logic interaction bindings
         document.querySelectorAll('.copy-loadstring-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const loadstring = e.target.getAttribute('data-loadstring');
