@@ -1,17 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
     const scriptsContainer = document.getElementById('scripts-container');
 
-    // Strict Request Channel: Pull configuration data directly from the network file
-    fetch('posts.json')
+    // Fetch scripts natively from posts.json using a safe relative path
+    fetch('./posts.json')
         .then(response => {
-            if (!response.ok) throw new Error("Network data unreadable.");
+            if (!response.ok) throw new Error("Could not find or read posts.json");
             return response.json();
         })
         .then(savedScripts => {
             renderScripts(savedScripts);
         })
         .catch(err => {
-            scriptsContainer.innerHTML = `<p style="color: #ff7b72;">Error loading dashboard. Make sure posts.json is created and formatted properly.</p>`;
+            console.error(err);
+            scriptsContainer.innerHTML = `
+                <div style="color: #ff7b72; padding: 20px; background: #21262d; border-radius: 6px; border: 1px solid #30363d;">
+                    <p><strong>Error loading dashboard.</strong></p>
+                    <p style="font-size: 0.85rem; color: #8b949e; margin-top: 5px;">
+                        If you are opening index.html directly from your computer files, browsers block local JSON files. 
+                        <strong>Upload these files to GitHub Pages</strong> and it will instantly work live!
+                    </p>
+                </div>`;
         });
 
     function renderScripts(savedScripts) {
@@ -22,9 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Dynamically identifies your custom environment or production deployment path
-        const baseUrl = window.location.href.split('index.html');
-        const rawFileUrl = `${baseUrl}posts.json`;
+        // Dynamically creates a rock-solid base folder URL without complex splitting logic
+        const currentUrl = new URL(window.location.href);
+        const baseUrl = currentUrl.origin + currentUrl.pathname.substring(0, currentUrl.pathname.lastIndexOf('/') + 1);
+        const rawFileUrl = baseUrl + 'posts.json';
 
         savedScripts.forEach(script => {
             const card = document.createElement('div');
