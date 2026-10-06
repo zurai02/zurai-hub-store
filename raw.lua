@@ -1,16 +1,14 @@
--- Roblox Executor Route Router
+-- Zurai Hub Pure Lua Dynamic Router
 return function(targetId)
     local HttpService = game:GetService("HttpService")
+    local rawBaseUrl = "https://githubusercontent.com"
     
-    -- Dynamically locate the base repository path from your active loader
-    -- This pulls your live, raw posts.json array directly into game memory
-    local baseUrl = _G.ScriptHubBaseUrl or "https://githubusercontent.com"
     local success, response = pcall(function()
-        return game:HttpGet(baseUrl .. "posts.json")
+        return game:HttpGet(rawBaseUrl .. "posts.json")
     end)
     
     if not success or not response then
-        warn("[ScriptHub Error]: Failed to fetch posts.json index array over the network.")
+        warn("[Zurai-Hub Error]: Failed to fetch posts.json index array.")
         return
     end
     
@@ -19,11 +17,10 @@ return function(targetId)
     end)
     
     if not decodeSuccess then
-        warn("[ScriptHub Error]: posts.json contains syntax formatting errors.")
+        warn("[Zurai-Hub Error]: posts.json contains a formatting syntax error.")
         return
     end
     
-    -- Loop through the parsed table to find your target script ID
     local matchedScript = nil
     for _, script in pairs(scriptList) do
         if script.id == targetId then
@@ -33,11 +30,14 @@ return function(targetId)
     end
     
     if matchedScript and matchedScript.content then
-        local runSuccess, runError = pcall(loadstring(matchedScript.content))
+        local runSuccess, runError = pcall(function()
+            local func = loadstring(matchedScript.content)
+            if func then func() else error("Failed to compile code string via loadstring.") end
+        end)
         if not runSuccess then
-            warn("[ScriptHub Error]: Runtime exception in execution: " .. tostring(runError))
+            warn("[Zurai-Hub Error]: Runtime exception in execution: " .. tostring(runError))
         end
     else
-        warn("[ScriptHub Error]: Script target identifier '" .. tostring(targetId) .. "' not found in database.")
+        warn("[Zurai-Hub Error]: Script target ID '" .. tostring(targetId) .. "' not found in database.")
     end
 end
