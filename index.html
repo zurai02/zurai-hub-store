@@ -3,25 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zurai Hub Store</title>
+    <title>Zurai Hub Store — Roblox Script Repository</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Fluid background mesh layer -->
     <div class="animated-bg"></div>
 
     <header>
-        <div class="logo">Zurai<span>HubStore</span></div>
+        <div class="header-content">
+            <div class="logo">Zurai<span>HubStore</span></div>
+            <div class="status-badge"><span class="pulse-dot"></span> Network Live</div>
+        </div>
     </header>
 
     <main class="container">
+        <!-- Interactive Search Container Layer -->
         <div class="search-container">
-            <input type="text" id="search-input" placeholder="Search scripts by title...">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Filter through available scripts...">
+            </div>
         </div>
 
         <section class="list-section">
-            <h2>Available Scripts</h2>
+            <h2>Active Script Repositories</h2>
             <div id="scripts-container" class="scripts-grid">
-                <p style="color: var(--text-muted); text-align: center;">Loading scripts...</p>
+                <!-- Fallback Loader UI layout block matrix -->
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Synchronizing script manifest dependencies...</p>
+                </div>
             </div>
         </section>
     </main>
