@@ -1,60 +1,47 @@
 document.addEventListener('DOMContentLoaded', () => {
     const scriptsContainer = document.getElementById('scripts-container');
 
-    // Safe offline dataset matrix for local desktop troubleshooting fallback scenarios
-    const repositoryManifest = [
-        {
-            "id": "novaui",
-            "title": "NovaUI"
-        },
-        {
-            "id": "zurai-hub",
-            "title": "Zurai-hub"
-        }
-    ];
-
-    // Natively fetch target list profiles
     fetch('./posts.json')
         .then(response => {
-            if (!response.ok) throw new Error();
+            if (!response.ok) throw new Error("Could not find or read posts.json");
             return response.json();
         })
         .then(savedScripts => {
             renderScripts(savedScripts);
         })
-        .catch(() => {
-            console.warn("Using offline fallback engine layout matrix.");
-            renderScripts(repositoryManifest);
+        .catch(err => {
+            console.error(err);
+            scriptsContainer.innerHTML = `<p style="color: #ff7b72; padding: 20px;">Error loading posts.json file data.</p>`;
         });
 
     function renderScripts(savedScripts) {
         scriptsContainer.innerHTML = '';
 
         if (!savedScripts || savedScripts.length === 0) {
-            scriptsContainer.innerHTML = '<p style="color: var(--text-muted);">Empty config mapping detected.</p>';
+            scriptsContainer.innerHTML = '<p style="color: var(--text-muted);">No entries found inside posts.json.</p>';
             return;
         }
 
-        // --- EXECUTOR FIX ROUTING LOGIC ---
-        // Translates deployment addresses directly into raw text channels
-        let rawFileUrl = '';
+        // Calculate your live GitHub raw assets folder path dynamically
         const currentUrl = new URL(window.location.href);
+        let rawBaseUrl = '';
 
         if (currentUrl.hostname.includes('github.io')) {
             const user = currentUrl.hostname.split('.')[0];
             const repo = currentUrl.pathname.split('/').filter(Boolean)[0];
-            rawFileUrl = `https://githubusercontent.com{user}/${repo}/main/posts.json`;
+            rawBaseUrl = `https://githubusercontent.com{user}/${repo}/main/`;
         } else {
-            // Local fallback routing if running on localhost / test directories
-            rawFileUrl = currentUrl.origin + currentUrl.pathname.substring(0, currentUrl.pathname.lastIndexOf('/') + 1) + 'posts.json';
+            // Local fallback directory mapping if testing locally
+            rawBaseUrl = currentUrl.origin + currentUrl.pathname.substring(0, currentUrl.pathname.lastIndexOf('/') + 1);
         }
 
         savedScripts.forEach(script => {
             const card = document.createElement('div');
             card.className = 'script-card';
 
-            // Flawless JSON data mapping loop built explicitly for Roblox executors
-            const loadstringText = `local json = game:GetService("HttpService"):JSONDecode(game:HttpGet("${rawFileUrl}")) for _, s in pairs(json) do if s.id == "${script.id}" then loadstring(s.content)() break end end`;
+            // GENERATES FLAWLESS COMPATIBLE LUA FOR EXECUTORS:
+            // Packs your base repo path variable and fires the clean raw.lua router script 
+            const loadstringText = `_G.ScriptHubBaseUrl = "${rawBaseUrl}" loadstring(game:HttpGet("${rawBaseUrl}raw.lua"))()("${script.id}")`;
 
             card.innerHTML = `
                 <h3>${escapeHtml(script.title)}</h3>
@@ -63,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
             scriptsContainer.appendChild(card);
         });
 
-        // Setup copy logic interaction bindings
         document.querySelectorAll('.copy-loadstring-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const loadstring = e.target.getAttribute('data-loadstring');
