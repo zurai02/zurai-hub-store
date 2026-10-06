@@ -1,36 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
     const scriptsContainer = document.getElementById('scripts-container');
+    const searchInput = document.getElementById('search-input');
+    
+    let masterScriptsArray = [];
 
-    // Natively fetch configuration index from posts.json for user interface rendering
+    // Natively fetch content entries out of posts.json mapping index file
     fetch('./posts.json')
         .then(response => {
-            if (!response.ok) throw new Error("Could not read posts.json");
+            if (!response.ok) throw new Error("File could not be parsed.");
             return response.json();
         })
         .then(savedScripts => {
-            renderScripts(savedScripts);
+            masterScriptsArray = savedScripts;
+            renderScripts(masterScriptsArray);
         })
         .catch(err => {
             console.error(err);
-            scriptsContainer.innerHTML = `<p style="color: #ff7b72; padding: 20px;">Error loading data map. Ensure posts.json exists and is properly formatted.</p>`;
+            scriptsContainer.innerHTML = `<p style="color: #ff7b72; text-align: center;">Error loading configuration index map (posts.json).</p>`;
         });
 
-    function renderScripts(savedScripts) {
+    function renderScripts(scriptsToDisplay) {
         scriptsContainer.innerHTML = '';
 
-        if (!savedScripts || savedScripts.length === 0) {
-            scriptsContainer.innerHTML = '<p style="color: var(--text-muted);">No entries found inside posts.json.</p>';
+        if (!scriptsToDisplay || scriptsToDisplay.length === 0) {
+            scriptsContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">No matching scripts discovered.</p>';
             return;
         }
 
-        // Exact locked-in GitHub Raw base URL for absolute execution stability
+        // Direct static raw assets link pointing directly to your repository variables
         const rawGitHubBaseUrl = "https://githubusercontent.com";
 
-        savedScripts.forEach(script => {
+        scriptsToDisplay.forEach(script => {
             const card = document.createElement('div');
             card.className = 'script-card';
 
-            // High-compatibility, short execution script for your Roblox executor
+            // High-compatibility executor instruction command loop macro configuration
             const loadstringText = `loadstring(game:HttpGet("${rawGitHubBaseUrl}raw.lua"))()("${script.id}")`;
 
             card.innerHTML = `
@@ -40,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             scriptsContainer.appendChild(card);
         });
 
-        // Set up click interactive copy listener
+        // Set up click interactive copy execution listener 
         document.querySelectorAll('.copy-loadstring-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const loadstring = e.target.getAttribute('data-loadstring');
@@ -52,6 +56,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // Dynamic Search Input Input Event Filtering Handle Loop
+    searchInput.addEventListener('input', (e) => {
+        const queryText = e.target.value.toLowerCase().trim();
+        const filteredList = masterScriptsArray.filter(script => 
+            script.title.toLowerCase().includes(queryText)
+        );
+        renderScripts(filteredList);
+    });
 
     function escapeHtml(text) {
         const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
