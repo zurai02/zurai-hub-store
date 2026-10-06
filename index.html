@@ -7,15 +7,23 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Premium background overlay mesh -->
+    <div class="animated-bg"></div>
+
     <header>
         <div class="logo">Zurai<span>HubStore</span></div>
     </header>
 
     <main class="container">
+        <!-- Search Input Node -->
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search scripts by title or keyword...">
+        </div>
+
         <section class="list-section">
             <h2>Available Scripts</h2>
             <div id="scripts-container" class="scripts-grid">
-                <p style="color: var(--text-muted);">Loading script manifest from posts.json...</p>
+                <p style="color: var(--text-muted); text-align: center;">Loading script manifest from posts.json...</p>
             </div>
         </section>
     </main>
